@@ -11,10 +11,10 @@ ToolScout plays two MCP roles at once:
 
 ```mermaid
 flowchart TB
-    subgraph Client side
+    subgraph client["Client side"]
       A[Agent / MCP client]
     end
-    subgraph ToolScout
+    subgraph ts["ToolScout"]
       RS["Router server<br/>search_tools · call_tool"]
       CP["Call proxy<br/>schema check · timeouts · size caps"]
       RET["Retrievers<br/>BM25F · dense · hybrid (RRF)"]
@@ -30,7 +30,9 @@ flowchart TB
     A <--> RS
     RS --> RET --> IDX
     RS --> CP --> UM
-    UM <--> S1 & S2 & SN
+    UM <--> S1
+    UM <--> S2
+    UM <--> SN
     UM --> CAT --> IDX
     RS -.-> OBS
     CP -.-> OBS
