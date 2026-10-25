@@ -1,83 +1,95 @@
 # ToolScout: Roadmap
 
-*Planned as about 5 weeks of part-time work, starting the week of September 28, 2026. Dates are targets.*
+*Planned as about 5 weeks of part-time work. Re-planned October 25, 2026 for Python, LangChain and LangGraph, restarting from M1. Dates are targets.*
 
-## M0: Proposal (week of Sep 28) ✅
+## M0: Proposal (Sep 28) ✅
 
 - [x] Problem statement and prior work ([PROPOSAL.md](PROPOSAL.md))
 - [x] Architecture ([DESIGN.md](DESIGN.md))
 - [x] Evaluation plan ([EVALUATION.md](EVALUATION.md))
 - [x] Decision log ([DECISIONS.md](DECISIONS.md))
 
-## M1: Gateway skeleton (target: Oct 5)
+## M0.5: Re-plan on LangChain and LangGraph (Oct 25) ✅
 
-- [ ] Go module, CLI entry point (`serve`, `index`), MIT license, CI running `go vet` and tests
-- [ ] YAML config with `${VAR}` expansion
-- [ ] Upstream manager: stdio and Streamable HTTP connections with the official Go SDK, `tools/list` with pagination, `list_changed` handling, reconnect with backoff
+- [x] Move the design from Go to Python, LangChain and LangGraph ([D1](DECISIONS.md#d1-python-on-langchain-and-langgraph))
+- [x] Add the LangChain middleware surface and the LangChain-native baselines
+
+## M1: Gateway skeleton (target: Nov 1)
+
+- [ ] `uv` project, Typer CLI (`serve`, `index`), MIT license, CI running `ruff`, `mypy` and `pytest`
+- [ ] Pin `langchain[mcp]`, `langgraph` and `fastmcp` versions
+- [ ] YAML config (Pydantic) with `${VAR}` expansion, converted to an `MCPConfig`
+- [ ] Upstream manager: one `MCPAdapter` over stdio and Streamable HTTP servers, `list_tools()`, refresh, health per server
+- [ ] Check what `MCPAdapter` exposes: tool annotations, raw `inputSchema`, `list_changed`, per-call session cost. Fill gaps from FastMCP's client
 - [ ] Tool catalog: `ToolRecord`, schema hashing, change detection
-- [ ] Router server: `search_tools` (plain substring match for now) and `call_tool` (forwarding only)
-- [ ] Check the namespaced tool-name format against the MCP spec's naming rules
-- [ ] Try it with Wanderly's Go MCP server and one or two official reference servers
+- [ ] FastMCP server: `search_tools` (plain substring match for now) and `call_tool` (forwarding only)
+- [ ] Settle the tool-name format (Q1)
+- [ ] Try it with Wanderly's MCP server and one or two official reference servers
 
 **Done when:** Claude Code can find and call a Wanderly tool through ToolScout.
 
-## M2: Lexical search (target: Oct 12)
+## M2: Lexical search (target: Nov 8)
 
-- [ ] Tokenizer: identifier splitting, stop words, Porter stemming, with unit tests
-- [ ] BM25F index with per-field weights and length normalization
+- [ ] Tokenizer: identifier splitting, stop words, Porter stemming, with unit tests (reused from the earlier search engine)
+- [ ] `BM25FRetriever(BaseRetriever)` with per-field weights and length normalization
+- [ ] Stock `BM25Retriever` wired up as an ablation
 - [ ] `toolscout search` with per-field score breakdowns
 - [ ] Export LiveMCPBench's 527 tools with `toolscout index`
 - [ ] First retrieval numbers on a small hand-labeled query set
 - [ ] Latency benchmark at 527 and ~2,500 tools
 
-**Done when:** there's a first table of Recall@k and latency for BM25F in `evals/results/`.
+**Done when:** there's a first table of Recall@k and latency for BM25F and stock BM25 in `evals/results/`.
 
-## M3: Hybrid search and CI gate (target: Oct 19)
+## M3: Hybrid search, middleware and CI gate (target: Nov 15)
 
-- [ ] Embedding provider interface: one local and one API implementation, vector cache keyed by schema hash
-- [ ] Dense retriever (brute-force cosine) and hybrid (RRF)
+- [ ] Dense retriever: `Embeddings` + `CacheBackedEmbeddings` + `InMemoryVectorStore`, one local (Ollama) and one API model
+- [ ] Hybrid: `EnsembleRetriever` (RRF) over BM25F and dense
+- [ ] `ToolScoutMiddleware` with `retrieve` and `gateway` modes, tested with `create_agent`
 - [ ] Labels for the 95 LiveMCPBench tasks, single-tool query set, look-alike query set
 - [ ] Decoy tools for the ~2,500 tier, sampled with a fixed seed
-- [ ] Dev/test split by tool; tune BM25F weights on dev only
+- [ ] Dev/test split by tool; tune BM25F weights and ensemble weights on dev only
 - [ ] `toolscout eval --suite retrieval`
 - [ ] GitHub Actions gate: Recall@10 and latency checks, with a job summary table
 - [ ] Call proxy: schema checks, timeouts, result size cap
 - [ ] Safety policy: allow/deny lists, hide destructive tools by default
 
-**Done when:** a PR that lowers dev Recall@10 by more than 1 point fails CI, and the test-split table compares BM25F, dense and hybrid at three tool-count tiers.
+**Done when:** a PR that lowers dev Recall@10 by more than 1 point fails CI, the test-split table compares stock BM25, BM25F, dense and hybrid at three tool-count tiers, and a `create_agent` agent with the middleware completes the Wanderly demo task.
 
-## M4: End-to-end runs (target: Oct 26)
+## M4: End-to-end runs (target: Nov 22)
 
-- [ ] ReAct agent runner that records JSONL traces
+- [ ] LangGraph runner: one `create_agent` agent, conditions as config, JSONL traces from middleware and a callback handler
+- [ ] Cost guards: `ModelCallLimitMiddleware` and `ToolCallLimitMiddleware` with the same limits in every condition
 - [ ] LiveMCPBench environment in Docker, tool check, frozen task subset
-- [ ] Pilot: 20 tasks × 4 conditions × 1 run, then check cost
-- [ ] Full runs: frozen tasks × 4 conditions × 3 runs (if the pilot cost is within budget)
+- [ ] Pilot: 20 tasks × core conditions (A–D) × 1 run, then check cost
+- [ ] Full runs: frozen tasks × A–D × 3 runs (if the pilot cost is within budget)
+- [ ] Ecosystem baselines E–G, 1 run each, if budget allows
 - [ ] Hand-label ~100 runs; judge agreement (κ)
 - [ ] Failure attribution by rules, with LLM fallback and a hand-checked sample
 - [ ] Paired statistics: McNemar for success, bootstrap CIs for tokens and cost
 
 **Done when:** results for conditions A–D are in `evals/results/` with CIs and failure-cause charts.
 
-## M5: v0.1 release (target: Nov 2)
+## M5: v0.1 release (target: Nov 29)
 
 - [ ] README results section: main table, 3–4 charts, honest limits
-- [ ] Setup guides for Claude Code, Claude Desktop and one other MCP client
+- [ ] Setup guides for Claude Code, Claude Desktop, one other MCP client, and LangChain `create_agent`
 - [ ] Demo GIF: an agent finding and calling tools across many servers
 - [ ] Short write-up of the findings (blog post or `docs/RESULTS.md`)
-- [ ] Tag `v0.1.0` with release binaries
+- [ ] Tag `v0.1.0` and publish `toolscout` to PyPI
 
 ## Phase 2: research questions (optional, after v0.1)
 
-- [ ] **Who writes the query:** one-shot retrieval vs. agent calls `search_tools` vs. dynamic exposure
+- [ ] **Who writes the query:** middleware `retrieve` vs. `search` (dynamic exposure) vs. `gateway`
 - [ ] **doc2query for BM25:** generated example requests as an extra field
 - [ ] **Look-alike tools:** failures at scale, split by near-duplicate vs. count
 - [ ] **Choosing k:** success and cost as k goes from 1 to 20
 - [ ] **Stronger model:** does a stronger model make up for weaker search?
 - [ ] **Cross-lingual:** Chinese requests against English tool descriptions
-- [ ] **Reranker:** cross-encoder or LLM rerank of the top 20
+- [ ] **Reranker:** `ContextualCompressionRetriever` with a cross-encoder or LLM rerank of the top 20
 
 ## Out of scope for v0.1
 
 - Proxying resources, prompts or sampling
-- Hosted service, accounts or web dashboard
+- Hosted service, accounts, web dashboard or LangGraph Platform deployment
 - Training a retrieval model
+- A LangChain.js port
