@@ -126,6 +126,7 @@ async with ToolScout.from_config("toolscout.yaml") as scout:
 | M3 Hybrid, middleware, CI gate | Nov 15 | Embeddings, `EnsembleRetriever`, `ToolScoutMiddleware`, labeled benchmark, GitHub Actions gate |
 | M4 End-to-end | Nov 22 | LangGraph agent runs on LiveMCPBench, cost and failure analysis |
 | M5 v0.1 release | Nov 29 | Results in README, demo, setup guides, PyPI release |
+| M6 Trained judge (optional) | After v0.1 | A small judge trained with SSL, SFT and RL, tested against hand labels |
 | Phase 2 (optional) | Later | Research questions: who writes the query, doc2query, look-alike tools |
 
 Full plan with checklists: [docs/ROADMAP.md](docs/ROADMAP.md).
@@ -137,6 +138,7 @@ Full plan with checklists: [docs/ROADMAP.md](docs/ROADMAP.md).
 - [Evaluation](docs/EVALUATION.md): benchmark, end-to-end experiments, statistics
 - [Roadmap](docs/ROADMAP.md): milestones and checklists
 - [Decisions](docs/DECISIONS.md): decisions made so far and open questions
+- [Trained judge](docs/JUDGE.md): optional track on training a small LLM judge with SSL, SFT and RL
 
 ## Related work
 

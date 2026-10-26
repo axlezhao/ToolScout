@@ -89,3 +89,5 @@ A running log of design decisions and the reasons for them. Each entry says what
 | Q6 | Default `k` | 5, 10, or adaptive by score gap | M4 |
 | Q7 | Gaps in `MCPAdapter` | Does it expose tool annotations, raw `inputSchema`, `list_changed`, and acceptable per-call session cost? If not, read those through FastMCP's client | M1 |
 | Q8 | Default middleware query | Latest user message only vs. user message + recent tool results vs. a model-written query | M4 |
+| Q9 | Base model for the trained judge ([JUDGE.md](JUDGE.md)) | Which 1–3B open instruct model, and whether it fits the trace length after rendering | Start of M6 |
+| Q10 | Hardware for M6 | Local Apple Silicon (fine for 0.5–1.5B LoRA SFT, slow for GRPO) vs. a rented GPU | Start of M6, from the cost of one RL run |

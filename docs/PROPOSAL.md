@@ -43,7 +43,7 @@ Searching over tools instead of loading all of them is a known fix. RAG-MCP cut 
 ## 5. Non-goals (v0.1)
 
 - Proxying MCP resources, prompts or sampling. Tools only.
-- Training or fine-tuning a retrieval model.
+- Training or fine-tuning a retrieval model. (Training a small *judge* is an optional track after v0.1; see [JUDGE.md](JUDGE.md).)
 - A hosted service, multi-user accounts or a web dashboard. (No LangGraph Platform deployment either.)
 - Handling authentication for upstream servers beyond passing configured headers and environment variables.
 - A TypeScript (LangChain.js) port.
@@ -91,6 +91,7 @@ If v0.1 ships on time, these turn the gateway into a small study:
 3. **Look-alike tools.** How much of the failure at scale comes from near-duplicate tools, rather than the total number of tools?
 4. **Choosing k.** Where does success peak between missing tools and confusion?
 5. **Cross-lingual queries.** Chinese requests against English tool descriptions: BM25 against multilingual embeddings.
+6. **A small trained judge.** Can a 1–3B model trained on ToolScout's own traces with self-supervised learning, supervised fine-tuning and RL grade agent runs as well as the large LLM judge, and does each stage help? Plan and equations in [JUDGE.md](JUDGE.md).
 
 ## 9. Risks and mitigations
 

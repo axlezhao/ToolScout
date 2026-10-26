@@ -117,6 +117,7 @@ E–G answer the question a LangChain user would ask first: "why not just use wh
 - Hand-label about 100 runs, stratified across conditions and verdicts.
 - Report agreement with the judge (Cohen's κ) and the cases where they disagree.
 - If κ < 0.7, report success rates from the hand labels next to the judge's, and treat the judge's numbers as rough.
+- Optional follow-up (M6): train a small judge on these traces with SSL, SFT and RL, and test whether it can replace the large one. See [JUDGE.md](JUDGE.md).
 
 ## 3. Failure attribution
 

@@ -77,6 +77,21 @@
 - [ ] Short write-up of the findings (blog post or `docs/RESULTS.md`)
 - [ ] Tag `v0.1.0` and publish `toolscout` to PyPI
 
+## M6: A small trained judge (optional, after v0.1, ~3–4 weeks)
+
+Plan and equations: [JUDGE.md](JUDGE.md). Needs the M4 traces.
+
+- [ ] Raise hand labels from ~100 to ~300, stratified by condition and judge verdict
+- [ ] Render traces for the judge without condition-revealing steps
+- [ ] 5-fold cross-fitting split by task, fixed seed
+- [ ] Stage 1: SSL on unlabeled traces (language modeling + next tool call)
+- [ ] Stage 2: SFT on silver labels and rationales, with class weights
+- [ ] Stage 3: GRPO with gold labels as the reward, KL to the SFT model
+- [ ] Ablations: base, SFT, SSL+SFT, SFT+RL, full, and the large judge
+- [ ] H1–H3 with task-clustered bootstrap CIs
+
+**Done when:** a table of κ for every judge variant with CIs, and the H3 check for C vs. D and C/D vs. A, are in `evals/results/judge/`.
+
 ## Phase 2: research questions (optional, after v0.1)
 
 - [ ] **Who writes the query:** middleware `retrieve` vs. `search` (dynamic exposure) vs. `gateway`
